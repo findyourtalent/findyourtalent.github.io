@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>发现你的本命天赋 · 探索工具</title>
+<style>
+:root{--c:#2B579A;--c2:#e8eef8;--ok:#2e7d32;--bg:#f7f8fb}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:var(--bg);color:#222;line-height:1.6}
+header{background:var(--c);color:#fff;padding:18px 20px}
+header h1{margin:0;font-size:22px}
+header p{margin:4px 0 0;opacity:.85;font-size:14px}
+nav{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px;background:#fff;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:5}
+nav button{border:1px solid var(--c);background:#fff;color:var(--c);padding:6px 12px;border-radius:16px;cursor:pointer;font-size:14px}
+nav button.active{background:var(--c);color:#fff}
+main{max-width:960px;margin:0 auto;padding:16px}
+section{display:none;background:#fff;border-radius:10px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+section.active{display:block}
+h2{color:var(--c);margin-top:0}
+.verse{background:var(--c2);border-left:4px solid var(--c);padding:8px 12px;margin:10px 0;font-size:14px}
+label{display:block;margin:8px 0 4px;font-weight:bold;font-size:14px}
+input[type=text],input[type=date],textarea,select{width:100%;padding:7px;border:1px solid #ccc;border-radius:6px;font:inherit}
+textarea{min-height:70px}
+.btn{background:var(--c);color:#fff;border:none;padding:7px 14px;border-radius:6px;cursor:pointer;margin:6px 6px 0 0;font:inherit;font-size:14px}
+.btn.sec{background:#888}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+th{background:var(--c);color:#fff;padding:6px}
+td{border:1px solid #ddd;padding:6px;text-align:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.card{border:1px solid #ddd;border-radius:8px;padding:10px}
+.bar{height:18px;background:var(--c);border-radius:4px}
+.barwrap{background:#eee;border-radius:4px;flex:1}
+.row{display:flex;align-items:center;gap:8px;margin:4px 0}
+.days{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.day{border:1px solid #ccc;border-radius:4px;padding:6px 0;text-align:center;cursor:pointer;font-size:13px;user-select:none}
+.day.done{background:var(--ok);color:#fff}
+.tag{display:inline-block;background:var(--c2);color:var(--c);padding:2px 8px;border-radius:10px;margin:2px;font-size:13px}
+.result{background:#f1f8e9;border:1px solid #c5e1a5;padding:10px;border-radius:8px;margin-top:10px}
+.muted{color:#777;font-size:13px}
+.qrow{display:flex;flex-wrap:wrap;justify-content:space-between;border-bottom:1px dashed #eee;padding:6px 0}
+.qrow label{display:inline;font-weight:normal;margin:0 5px}
+@media print{nav,header,.btn,.noprint{display:none!important}section{display:block!important;box-shadow:none;page-break-after:always}
+body.pm section:not(#map){display:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>发现你的本命天赋 · 探索工具</h1>
+  <p>配合《选择》第六章《探索篇》使用 · 所有记录只保存在你自己的电脑里</p>
+</header>
+<nav>
+  <button data-tab="home" class="active">开始</button>
+  <button data-tab="energy">① 精力记录</button>
+  <button data-tab="easy">② 轻松出色·童年</button>
+  <button data-tab="feedback">③ 五人反馈</button>
+  <button data-tab="circles">④ 三个圈</button>
+  <button data-tab="quiz">⑤ 天赋自测</button>
+  <button data-tab="score">⑥ 四看打分</button>
+  <button data-tab="exp">⑦ 30天实验</button>
+  <button data-tab="plan">⑧ 90天计划</button>
+  <button data-tab="map">⑨ 天赋地图</button>
+</nav>
+<main>
+
+<section id="home" class="active">
+  <h2>欢迎你，探险家！</h2>
+  <p>不是你没有天赋，而是你还没有找到发现它的方法。这个小工具会陪你一步步完成第六章里的方法：观察、记录、收集反馈、打分、实验，最后画出属于你的“天赋地图”。</p>
+  <div class="verse">“我要称谢你，因我受造奇妙可畏。”——诗篇 139:14</div>
+  <p><b>建议顺序：</b>按上方 ①→⑨ 依次进行，不用一次做完，每天花10分钟就好。你填写的内容会自动保存在这台电脑的浏览器里。</p>
+  <div class="noprint">
+    <button class="btn" onclick="exportData()">导出记录（备份）</button>
+    <label class="btn" style="display:inline-block;font-weight:normal">导入记录<input type="file" accept=".json" style="display:none" onchange="importData(this.files[0])"></label>
+    <button class="btn" onclick="window.print()">打印全部</button>
+    <button class="btn sec" onclick="resetAll()">清空所有记录</button>
+  </div>
+</section>
+
+<section id="energy">
+  <h2>① 精力观察记录表</h2>
+  <p>每天晚上花5分钟记录：今天哪件事让你越做越有劲？哪件事让你特别累？坚持两到四周，规律就会显现。</p>
+  <div class="verse">“凡你手所当做的事，要尽力去做。”——传道书 9:10</div>
+  <div class="grid">
+    <div><label>日期</label><input type="date" id="lgDate"></div>
+    <div><label>我做了什么</label><input type="text" id="lgAct" placeholder="如：给同学讲题"></div>
+    <div><label>当时的感觉</label><select id="lgFeel"><option value="+">＋越做越有劲</option><option value="0">一般</option><option value="-">－很疲惫</option></select></div>
+    <div><label>别人的反馈或结果</label><input type="text" id="lgFb" placeholder="如：他说终于听懂了"></div>
+  </div>
+  <button class="btn" onclick="addLog()">添加记录</button>
+  <table><thead><tr><th>日期</th><th>做了什么</th><th>感觉</th><th>反馈</th><th></th></tr></thead><tbody id="lgBody"></tbody></table>
+  <div class="result" id="lgSum"></div>
+</section>
+
+<section id="easy">
+  <h2>② “轻松却出色”检验 · 童年回溯</h2>
+  <label>有哪些事，你不太费劲就做得不错，别人却觉得很难？（越“理所当然”越要写下来）</label>
+  <textarea data-bind="easy" placeholder="如：写作文一口气写完；别人搞不定的电脑问题我一试就懂……"></textarea>
+  <label>六到十二岁时：下课最爱做什么？一个人在家会自动玩什么？没人要求时你会做什么？</label>
+  <textarea data-bind="child" placeholder="如：爱拆闹钟、爱给弟弟妹妹讲故事、爱把玩具排整齐……"></textarea>
+  <div class="verse">“我未将你造在腹中，我已晓得你。”——耶利米书 1:5</div>
+</section>
+
+<section id="feedback">
+  <h2>③ 请五个人告诉你，他们眼中的你</h2>
+  <p>找爸爸或妈妈、一位老师、一位朋友、一位同学、一位长辈，请他们回答下面三个问题。最后从回答里提炼几个关键词，系统会自动统计哪些词反复出现。</p>
+  <div class="verse">“朋友加的伤痕，出于忠诚。”——箴言 27:6</div>
+  <div class="grid" id="fbBox"></div>
+  <div class="result" id="fbRes"></div>
+</section>
+
+<section id="circles">
+  <h2>④ 三个圈：喜欢 · 擅长 · 有用</h2>
+  <p>每行写一项。<b>尽量用相同的说法</b>（例如都写“写作”），系统才能找出交汇的地方。</p>
+  <div class="grid">
+    <div><label>我喜欢做的事</label><textarea data-bind="circles.like" data-after="anaCircles"></textarea></div>
+    <div><label>我做得比较好的事</label><textarea data-bind="circles.good" data-after="anaCircles"></textarea></div>
+    <div><label>别人需要、对别人有帮助的事</label><textarea data-bind="circles.need" data-after="anaCircles"></textarea></div>
+  </div>
+  <div class="result" id="ciRes"></div>
+  <div class="verse">“各人要照所得的恩赐彼此服事。”——彼得前书 4:10</div>
+</section>
+
+<section id="quiz">
+  <h2>⑤ 天赋类型自测（24题）</h2>
+  <p>按真实情况选择：1＝完全不像我，5＝非常像我。没有对错，大多数人都会有一两个主力天赋，加上两三个辅助天赋。</p>
+  <div id="qzBox"></div>
+  <div id="qzRes"></div>
+  <div class="verse">“按我们所得的恩典，各有不同的恩赐。”——罗马书 12:6</div>
+</section>
+
+<section id="score">
+  <h2>⑥ 四看标准打分</h2>
+  <p>把前面发现的候选天赋逐个加进来，从四个方面各打1到5分。<b>16分以上</b>：核心天赋；<b>12到15分</b>：有潜力；<b>11分以下</b>：也许只是爱好。</p>
+  <div class="row noprint"><input type="text" id="cdName" placeholder="输入一个候选天赋，如：写作 / 组织活动 / 编程"><button class="btn" onclick="addCand()" style="margin:0">添加</button></div>
+  <p class="muted">喜欢＝做的时候愉快想继续；擅长＝比同龄人更容易做好；持续＝越做越想做；有用＝能帮到别人。</p>
+  <div class="grid" id="cdBox"></div>
+  <div class="result" id="cdRank"></div>
+</section>
+
+<section id="exp">
+  <h2>⑦ 30天小实验</h2>
+  <p>选一件你感兴趣的事，每天花20到30分钟去做，完成一天就点一下格子。</p>
+  <div class="grid">
+    <div><label>我的实验内容</label><input type="text" data-bind="exp.name" placeholder="如：每天写300字 / 学一首曲子"></div>
+    <div><label>开始日期</label><input type="date" data-bind="exp.start"></div>
+  </div>
+  <label>打卡</label>
+  <div class="days" id="exDays"></div>
+  <p id="exProg" class="muted"></p>
+  <label>复盘一：我还想继续吗？为什么？</label><textarea data-bind="exp.q1"></textarea>
+  <label>复盘二：我有没有进步？具体在哪里？</label><textarea data-bind="exp.q2"></textarea>
+  <label>复盘三：别人看到我的变化了吗？</label><textarea data-bind="exp.q3"></textarea>
+  <div class="verse">大卫的投石本领，是在牧羊的日子里一天天练出来的。——参撒母耳记上 17:34–37</div>
+</section>
+
+<section id="plan">
+  <h2>⑧ 90天探索计划</h2>
+  <div id="plProg"></div>
+  <div class="grid" id="plBox"></div>
+  <p class="muted">初中：广泛尝试，不急着贴标签；高中：聚焦两三个方向并验证；大学及以后：深耕，也允许调整。</p>
+  <div class="verse">“你所做的，要交托耶和华，你所谋的就必成立。”——箴言 16:3</div>
+</section>
+
+<section id="map">
+  <h2>⑨ 我的天赋地图</h2>
+  <p class="noprint">可以点“自动生成”，从自测和打分结果中填入，再自己修改。建议每半年更新一次。</p>
+  <button class="btn noprint" onclick="autoMap()">从结果自动生成</button>
+  <button class="btn noprint" onclick="printMap()">打印天赋地图</button>
+  <label>我的主力天赋（一到两个）</label><textarea data-bind="map.main"></textarea>
+  <label>我的辅助天赋（两到三个）</label><textarea data-bind="map.sub"></textarea>
+  <label>我想继续探索的方向（三个以内）</label><textarea data-bind="map.dirs"></textarea>
+  <label>我接下来的三个具体行动</label><textarea data-bind="map.acts" placeholder="1. ……&#10;2. ……&#10;3. ……"></textarea>
+  <div class="verse">“你们的光也当这样照在人前。”——马太福音 5:16</div>
+  <p>“谢谢你把我造得这样奇妙。请帮助我认识自己，使用我的才干，成为别人的祝福。”</p>
+</section>
+</main>
+
+<script>
+const KEY='tianfu_v1';
+const def={log:[],easy:'',child:'',fb:[],circles:{like:'',good:'',need:''},quiz:{},cands:[],exp:{name:'',start:'',days:[],q1:'',q2:'',q3:''},plan:{},map:{main:'',sub:'',dirs:'',acts:''}};
+let S={};
+try{S=JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){S={};}
+for(const k in def){if(S[k]===undefined)S[k]=JSON.parse(JSON.stringify(def[k]));}
+const save=()=>localStorage.setItem(KEY,JSON.stringify(S));
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const getP=p=>p.split('.').reduce((o,k)=>o[k],S);
+function setP(p,v){const ks=p.split('.');const last=ks.pop();ks.reduce((o,k)=>o[k],S)[last]=v;save();}
+function syncBinds(){document.querySelectorAll('[data-bind]').forEach(el=>{el.value=getP(el.dataset.bind)||'';});}
+
+/* 标签切换 */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button,section').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');$(b.dataset.tab).classList.add('active');window.scrollTo(0,0);
+});
+
+/* 通用输入绑定 */
+document.querySelectorAll('[data-bind]').forEach(el=>{
+  el.addEventListener('input',()=>{setP(el.dataset.bind,el.value);if(el.dataset.after)window[el.dataset.after]();});
+});
+
+/* ① 精力记录 */
+const FEEL={'+':'＋有劲','0':'一般','-':'－疲惫'};
+function addLog(){
+  const a=$('lgAct').value.trim();
+  if(!a){alert('请先填写“我做了什么”');return;}
+  S.log.push({d:$('lgDate').value,a:a,f:$('lgFeel').value,b:$('lgFb').value.trim()});
+  save();$('lgAct').value='';$('lgFb').value='';renderLog();
+}
+function delLog(i){S.log.splice(i,1);save();renderLog();}
+function renderLog(){
+  $('lgBody').innerHTML=S.log.map((r,i)=>`<tr><td>${esc(r.d)}</td><td>${esc(r.a)}</td><td>${FEEL[r.f]}</td><td>${esc(r.b)}</td><td><button class="btn sec" onclick="delLog(${i})">删除</button></td></tr>`).join('')||'<tr><td colspan="5" class="muted">还没有记录，今晚就开始吧！</td></tr>';
+  const cnt=f=>{const c={};S.log.filter(r=>r.f===f).forEach(r=>c[r.a]=(c[r.a]||0)+1);return Object.entries(c).sort((x,y)=>y[1]-x[1]);};
+  const tags=arr=>arr.map(([k,n])=>`<span class="tag">${esc(k)}${n>1?' ×'+n:''}</span>`).join('')||'—';
+  $('lgSum').innerHTML=`共 ${S.log.length} 条记录<br><b>让你越做越有劲的事：</b>${tags(cnt('+'))}<br><b>让你疲惫的事：</b>${tags(cnt('-'))}<p class="muted">反复出现在“有劲”里的事，很可能藏着你的天赋线索。</p>`;
+}
+
+/* ③ 五人反馈 */
+const FBQ=['你觉得我最大的优点是什么？','有什么事，你会特别想找我帮忙？','你见过我什么时候特别“发光”？'];
+function renderFb(){
+  while(S.fb.length<5)S.fb.push({who:'',q1:'',q2:'',q3:'',kw:''});
+  $('fbBox').innerHTML=S.fb.map((r,i)=>`<div class="card"><label>第${i+1}位（如：妈妈 / 班主任 / 好友）</label><input type="text" value="${esc(r.who)}" oninput="upFb(${i},'who',this.value)">${FBQ.map((q,j)=>`<label>${q}</label><textarea oninput="upFb(${i},'q${j+1}',this.value)">${esc(r['q'+(j+1)])}</textarea>`).join('')}<label>从回答中提炼的关键词（用逗号分隔）</label><input type="text" value="${esc(r.kw)}" placeholder="如：耐心，会讲解，有条理" oninput="upFb(${i},'kw',this.value)"></div>`).join('');
+  anaFb();
+}
+function upFb(i,k,v){S.fb[i][k]=v;save();if(k==='kw')anaFb();}
+const splitKw=s=>String(s||'').split(/[,，、;；\s]+/).map(x=>x.trim()).filter(Boolean);
+function anaFb(){
+  const c={};S.fb.forEach(r=>new Set(splitKw(r.kw)).forEach(k=>c[k]=(c[k]||0)+1));
+  const arr=Object.entries(c).sort((a,b)=>b[1]-a[1]);
+  $('fbRes').innerHTML=arr.length?'<b>关键词统计：</b>'+arr.map(([k,n])=>`<span class="tag" style="${n>=3?'background:#2B579A;color:#fff':n>=2?'background:#c8d8f0':''}">${esc(k)} ×${n}</span>`).join('')+'<p class="muted">被3人以上提到的（深色）很可能是你的天赋；被2人提到的（浅色）值得继续观察。</p>':'<span class="muted">填写关键词后，这里会自动统计重复出现的词。</span>';
+}
+
+/* ④ 三个圈 */
+const lines=s=>[...new Set(String(s||'').split(/\n+/).map(x=>x.trim()).filter(Boolean))];
+function anaCircles(){
+  const L=lines(S.circles.like),G=lines(S.circles.good),N=lines(S.circles.need);
+  const three=[],two=[];
+  new Set([...L,...G,...N]).forEach(x=>{const n=[L,G,N].filter(a=>a.includes(x)).length;if(n===3)three.push(x);else if(n===2)two.push(x);});
+  $('ciRes').innerHTML=`<b>三圈交汇（最值得投入）：</b>${three.map(t=>`<span class="tag" style="background:#2B579A;color:#fff">${esc(t)}</span>`).join('')||'—'}<br><b>两圈交汇（有潜力）：</b>${two.map(t=>`<span class="tag">${esc(t)}</span>`).join('')||'—'}`;
+}
+
+/* ⑤ 天赋自测 */
+const TYPES=[
+ {n:'思考分析型',d:'科研、工程、数据分析、医学研究',q:['我常常追问“为什么”','我喜欢解谜、推理或数学题','我愿意花时间把一个问题研究透']},
+ {n:'语言表达型',d:'写作、教学、演讲、传媒、法律',q:['我喜欢写东西或讲故事','别人常说我说话有说服力','我容易用语言打动或安慰别人']},
+ {n:'创造设计型',d:'艺术、设计、音乐、建筑',q:['我常有新奇的点子','我对颜色、形状或声音很敏感','我喜欢画画、做音乐或设计东西']},
+ {n:'动手实践型',d:'技术、制造、实验、农业',q:['我喜欢拆装、修理或做手工','比起看说明书，我更想直接动手','我做出来的东西常常很实用']},
+ {n:'人际关怀型',d:'辅导、护理、心理咨询、社会工作',q:['朋友难过时常来找我倾诉','我能很快察觉别人的情绪','帮助别人让我很有满足感']},
+ {n:'组织领导型',d:'策划、管理、项目负责人',q:['我喜欢安排计划和分工','小组活动时我常自然成为带头人','我能把乱糟糟的事理清楚']},
+ {n:'身体运动型',d:'体育、舞蹈、康复、户外教育',q:['我喜欢运动或户外活动','我的身体协调性比较好','动起来时我比坐着更有精神']},
+ {n:'洞察趋势型',d:'产品、投资、新闻、创业',q:['我常注意到别人没留意的问题或机会','我喜欢关注新事物和新趋势','我经常想“这件事还能怎么做得更好”']}
+];
+function renderQuiz(){
+  let html='',no=1;
+  for(let j=0;j<3;j++)TYPES.forEach((t,i)=>{
+    const k=i+'_'+j,v=S.quiz[k];
+    html+=`<div class="qrow"><span style="flex:1;min-width:220px">${no++}. ${t.q[j]}</span><span>${[1,2,3,4,5].map(n=>`<label><input type="radio" name="q${k}" ${v==n?'checked':''} onchange="S.quiz['${k}']=${n};save();anaQuiz()"> ${n}</label>`).join('')}</span></div>`;
+  });
+  $('qzBox').innerHTML=html;anaQuiz();
+}
+const quizScores=()=>TYPES.map((t,i)=>({n:t.n,d:t.d,s:[0,1,2].reduce((a,j)=>a+(S.quiz[i+'_'+j]||0),0)}));
+function anaQuiz(){
+  const answered=Object.keys(S.quiz).length;
+  const sorted=quizScores().sort((a,b)=>b.s-a.s);
+  let h=`<p class="muted">已作答 ${answered}/24 题</p>`+sorted.map(x=>`<div class="row"><span style="width:96px">${x.n}</span><div class="barwrap"><div class="bar" style="width:${x.s/15*100}%"></div></div><span style="width:48px">${x.s}/15</span></div>`).join('');
+  if(answered===24)h+=`<div class="result"><b>你的主力天赋：</b>${sorted.slice(0,2).map(x=>x.n).join('、')}<br><b>辅助天赋：</b>${sorted.slice(2,4).map(x=>x.n).join('、')}<br><b>可以考虑的方向：</b>${sorted.slice(0,2).map(x=>x.d).join('；')}<br><span class="muted">这只是参考，请结合记录表、反馈和小实验一起判断。</span><br><button class="btn" onclick="quizToMap()">填入我的天赋地图</button></div>`;
+  $('qzRes').innerHTML=h;
+}
+function quizToMap(silent){
+  const s=quizScores().sort((a,b)=>b.s-a.s);
+  S.map.main=s.slice(0,2).map(x=>x.n).join('、');S.map.sub=s.slice(2,4).map(x=>x.n).join('、');
+  save();syncBinds();if(!silent)alert('已填入“天赋地图”，你可以再修改。');
+}
+
+/* ⑥ 四看打分 */
+const DIMS=[['like','喜欢'],['good','擅长'],['keep','持续'],['use','有用']];
+const total=c=>DIMS.reduce((a,[k])=>a+ +c[k],0);
+const verdict=t=>t>=16?['核心天赋，值得重点投入','#2e7d32']:t>=12?['有潜力，继续观察与练习','#e69500']:['也许只是爱好，保留这份乐趣','#888'];
+function addCand(){const n=$('cdName').value.trim();if(!n)return;S.cands.push({n:n,like:3,good:3,keep:3,use:3});$('cdName').value='';save();renderCands();}
+function delCand(i){S.cands.splice(i,1);save();renderCands();}
+function upCand(i,k,v){S.cands[i][k]=+v;save();renderCands();}
+function renderCands(){
+  $('cdBox').innerHTML=S.cands.map((c,i)=>{const t=total(c),[v,col]=verdict(t);
+    return `<div class="card"><div class="row" style="justify-content:space-between"><b>${esc(c.n)}</b><button class="btn sec noprint" onclick="delCand(${i})">删除</button></div>${DIMS.map(([k,l])=>`<div class="row"><span style="width:40px">${l}</span><input type="range" min="1" max="5" value="${c[k]}" style="flex:1" oninput="this.nextElementSibling.textContent=this.value" onchange="upCand(${i},'${k}',this.value)"><span>${c[k]}</span></div>`).join('')}<div style="color:${col}"><b>总分 ${t}/20</b> · ${v}</div></div>`;
+  }).join('')||'<p class="muted">先添加一个候选天赋，例如“写作”“讲解题目”“组织活动”。</p>';
+  const rk=S.cands.map(c=>({n:c.n,t:total(c)})).sort((a,b)=>b.t-a.t);
+  $('cdRank').innerHTML=rk.length?'<b>排名：</b>'+rk.map((x,i)=>`<span class="tag">${i+1}. ${esc(x.n)}（${x.t}分）</span>`).join(''):'<span class="muted">添加后，这里会自动排名。</span>';
+}
+
+/* ⑦ 30天实验 */
+function togDay(i){S.exp.days[i]=!S.exp.days[i];save();renderExp();}
+function renderExp(){
+  const d=S.exp.days;
+  $('exDays').innerHTML=Array.from({length:30},(_,i)=>`<div class="day ${d[i]?'done':''}" onclick="togDay(${i})">${i+1}</div>`).join('');
+  const n=d.filter(Boolean).length;
+  $('exProg').textContent=`已完成 ${n}/30 天`+(n>=30?'，太棒了！请完成下面的复盘。':n>=15?'，已经过半，继续加油！':'');
+}
+
+/* ⑧ 90天计划 */
+const PLAN=[
+ ['第1周：收集线索',['开始填写“精力记录表”','写下“轻松却出色”的事','完成童年回溯','请五个人给我反馈']],
+ ['第2–4周：整理与选择',['画出“三个圈”','选出2–3个想尝试的方向','开始一个“30天小实验”']],
+ ['第5–8周：验证与打分',['完成小实验复盘','用“四看标准”给每个方向打分','完成天赋类型自测','采访一位相关领域的前辈或做一次体验']],
+ ['第9–12周：写下天赋地图',['填写“我的天赋地图”','和父母分享我的发现','定下接下来的三个行动','设定半年后更新的日期']]
+];
+function renderPlan(){
+  let tot=0,done=0;
+  $('plBox').innerHTML=PLAN.map(([h,ts],i)=>`<div class="card"><b>${h}</b>${ts.map((t,j)=>{const k=i+'_'+j;tot++;if(S.plan[k])done++;return `<div class="row"><input type="checkbox" ${S.plan[k]?'checked':''} onchange="S.plan['${k}']=this.checked;save();renderPlan()"><span>${t}</span></div>`;}).join('')}</div>`).join('');
+  $('plProg').innerHTML=`<div class="row"><span>总进度</span><div class="barwrap"><div class="bar" style="width:${done/tot*100}%;background:var(--ok)"></div></div><span>${done}/${tot}</span></div>`;
+}
+
+/* ⑨ 天赋地图 */
+function autoMap(){
+  if(Object.keys(S.quiz).length===24)quizToMap(true);
+  const rk=S.cands.map(c=>({n:c.n,t:total(c)})).sort((a,b)=>b.t-a.t).slice(0,3);
+  if(rk.length)S.map.dirs=rk.map(x=>x.n).join('、');
+  save();syncBinds();
+  alert('已根据自测和打分结果生成，你可以继续修改。');
+}
+function printMap(){document.body.classList.add('pm');window.print();document.body.classList.remove('pm');}
+
+/* 备份与恢复 */
+function exportData(){
+  const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='我的天赋探索记录.json';a.click();
+}
+function importData(f){
+  if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{S=Object.assign(JSON.parse(JSON.stringify(def)),JSON.parse(r.result));save();location.reload();}catch(e){alert('文件格式不正确');}};
+  r.readAsText(f);
+}
+function resetAll(){if(confirm('确定清空所有记录吗？此操作无法撤销。')){localStorage.removeItem(KEY);location.reload();}}
+
+/* 初始化 */
+$('lgDate').valueAsDate=new Date();
+syncBinds();renderLog();renderFb();anaCircles();renderQuiz();renderCands();renderExp();renderPlan();
+</script>
+</body>
+</html>
+
+
